@@ -397,7 +397,7 @@ Checkout Arae
                 <div class="woocommerce-checkout-payment">                  
                     <form onsubmit="trimiteRezervarea(event)">
                     <div class="form-row place-order">
-                        <button type="submit" class="th-btn">Place order</button>
+                        <button type="submit" class="th-btn">Plasează comanda</button>
                     </div>
                 </form>
                 </div>
@@ -538,47 +538,84 @@ Checkout Arae
     
 
     <script>
-        function trimiteClientul() {
-            const nume = document.querySelector('input[placeholder="Nume"]').value;
-            const prenume = document.querySelector('input[placeholder="Prenume"]').value;
-            const email = document.querySelector('input[placeholder="Email"]').value;
-            const telefon = document.querySelector('input[placeholder="Telefon"]').value;
-        
-          const client = { nume, prenume, email, telefon };
-        
-          // Salvăm temporar în sessionStorage (nu localStorage)
-          sessionStorage.setItem("clientNume", nume);
-          sessionStorage.setItem("clientPrenume", prenume);
-          sessionStorage.setItem("clientEmail", email);
-          sessionStorage.setItem("clientTelefon", telefon);
-        
-          fetch('http://localhost:8080/clienti', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(client)
-          })
-          .then(res => {
-            if (!res.ok) throw new Error("Eroare");
-        
-            // ✅ Completăm imediat câmpurile de jos
-            const firstNameInput = document.querySelector('input[placeholder="First Name"]');
-            const lastNameInput = document.querySelector('input[placeholder="Last Name"]');
-            const emailInput = document.querySelector('input[placeholder="Email Address"]');
-            const phoneInput = document.querySelector('input[placeholder="Phone number"]');
-        
-            document.getElementById("rezervare-prenume").value = prenume;
-            document.getElementById("rezervare-nume").value = nume;
-            document.getElementById("rezervare-email").value = email;
-            document.getElementById("rezervare-telefon").value = telefon;
-        
-            // Scroll către formular
-            document.getElementById('formular-rezervare').scrollIntoView({ behavior: 'smooth' });
-          })
-          .catch(err => {
-            alert("Eroare la trimitere!");
-            console.error(err);
-          });
-        }
+function trimiteClientul() {
+  const nume = document.querySelector('#input-nume');
+  const prenume = document.querySelector('#input-prenume');
+  const email = document.querySelector('#input-email');
+  const telefon = document.querySelector('#input-telefon');
+
+  const valNume = nume.value.trim();
+  const valPrenume = prenume.value.trim();
+  const valEmail = email.value.trim();
+  const valTelefon = telefon.value.trim();
+
+  // Resetare stil bordură
+  [nume, prenume, email, telefon].forEach(input => {
+    input.style.border = "1px solid #ccc";
+  });
+
+  // ✅ Validări
+  const doarLitere = /^[a-zA-ZăîâșțĂÎÂȘȚ]+$/;
+  const emailValid = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
+  const doarCifre = /^\d{9}$/;
+
+  if (!doarLitere.test(valNume)) {
+    alert("Numele trebuie să conțină doar litere.");
+    nume.style.border = "2px solid red";
+    return;
+  }
+
+  if (!doarLitere.test(valPrenume)) {
+    alert("Prenumele trebuie să conțină doar litere.");
+    prenume.style.border = "2px solid red";
+    return;
+  }
+
+  if (!emailValid.test(valEmail)) {
+    alert("Emailul trebuie să fie valid și să conțină @gmail.com.");
+    email.style.border = "2px solid red";
+    return;
+  }
+
+  if (!doarCifre.test(valTelefon)) {
+    alert("Telefonul trebuie să conțină exact 9 cifre.");
+    telefon.style.border = "2px solid red";
+    return;
+  }
+
+  // 🔒 Dacă toate sunt valide, continuăm
+  const client = {
+    nume: valNume,
+    prenume: valPrenume,
+    email: valEmail,
+    telefon: valTelefon
+  };
+
+  sessionStorage.setItem("clientNume", valNume);
+  sessionStorage.setItem("clientPrenume", valPrenume);
+  sessionStorage.setItem("clientEmail", valEmail);
+  sessionStorage.setItem("clientTelefon", valTelefon);
+
+  fetch('http://localhost:8080/clienti', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(client)
+  })
+    .then(res => {
+      if (!res.ok) throw new Error("Eroare");
+
+      document.getElementById("rezervare-prenume").value = valPrenume;
+      document.getElementById("rezervare-nume").value = valNume;
+      document.getElementById("rezervare-email").value = valEmail;
+      document.getElementById("rezervare-telefon").value = valTelefon;
+
+      document.getElementById('formular-rezervare').scrollIntoView({ behavior: 'smooth' });
+    })
+    .catch(err => {
+      alert("Eroare la trimitere!");
+      console.error(err);
+    });
+}
         
         document.addEventListener("DOMContentLoaded", () => {
             const prenume = sessionStorage.getItem("clientPrenume");

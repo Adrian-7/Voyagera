@@ -1441,20 +1441,33 @@ function trimiteDestinatia() {
   const transport = document.getElementById("category").value;
   const nrPersoane = document.getElementById("nrPersoane").value;
 
-  // Salvăm valorile în sessionStorage
-  sessionStorage.setItem("rez_destinatie", destinatie);
+  const valoriInvalide = [
+    "Selectează",
+    "Selectează destinația",
+    "Selectează tip aventură",
+    "Selectează durata",
+    "Selectează transportul",
+    "Selectează nr. persoane"
+  ];
+
+  if (
+    !valoriInvalide.includes(destinatie) &&
+    !valoriInvalide.includes(tip) &&
+    !valoriInvalide.includes(durata) &&
+    !valoriInvalide.includes(transport) &&
+    !valoriInvalide.includes(nrPersoane)
+  ) {
+    sessionStorage.setItem("rez_destinatie", destinatie);
   sessionStorage.setItem("rez_tip", tip);
   sessionStorage.setItem("rez_durata", durata);
   sessionStorage.setItem("rez_transport", transport);
   sessionStorage.setItem("rez_persoane", nrPersoane);
-
-  // Redirecționează către pagina hotelurilor
-  if (destinatie && destinatie !== "Selectează") {
-    window.location.href = `hotels.html?t=${encodeURIComponent(destinatie)}`;
-  } else {
-    alert("Selectează o destinație");
+  
+  window.location.href = `hotels.html?t=${encodeURIComponent(destinatie)}`;
+} else {
+    alert("Te rugăm să completezi toate câmpurile.");
   }
-}
+    }
 
 
 window.addEventListener('load', () => {
