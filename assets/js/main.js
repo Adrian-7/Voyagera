@@ -293,6 +293,11 @@
             }
       
             hoteluri.forEach(hotel => {
+                  const esteCompletat = sessionStorage.getItem("rez_destinatie") &&
+                        sessionStorage.getItem("rez_tip") &&
+                        sessionStorage.getItem("rez_durata") &&
+                        sessionStorage.getItem("rez_transport") &&
+                        sessionStorage.getItem("rez_persoane");
               const card = document.createElement("div");
               card.className = "hotel-col";
       
@@ -315,7 +320,8 @@
                     </h4>
                     <div class="tour-action">
                       <span><i class="fa-light fa-location-dot"></i> ${hotel.tara}</span>
-                      <a href="checkout.html?id=${hotel.id_hotel}" class="th-btn style4 th-icon">Rezervă</a>
+                     <a href="${esteCompletat ? `checkout.html?id=${hotel.id_hotel}` : 'home-travel.html?scroll=booking-form'}" 
+                    class="th-btn style4 th-icon">Rezervă </a>
                     </div>
                   </div>
                 </div>
